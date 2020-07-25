@@ -24,6 +24,20 @@ git_checkout_interactive() {
     fi
     branches="$(echo $branches | sed -r 's/^\*?\s*//')"
     echo "Branches:\n$branches"
+    if [ "$(echo $branches | wc -l)" -lt 2 ]
+    then
+        echo "No branch to select"
+        return 0
+    fi
+
+    if ! command -v fzf &> /dev/null
+    then
+        echo "Unable to find command 'fzf'. Please install 'fzf'."
+        return 1
+    else
+        selected_branch=$(echo "$branches" | fzf)
+        echo "Selected branch: $selected_branch"
+    fi
 }
 
 gc() {
@@ -31,7 +45,7 @@ gc() {
     then
         echo "Too few arguments"
         __gci_usage
-        exit 1
+        return 1
     else
         interactive=false
         for arg in "$@"
