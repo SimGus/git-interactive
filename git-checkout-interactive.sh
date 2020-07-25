@@ -47,22 +47,26 @@ git_checkout_interactive() {
     branches="$(echo $branches | sed -r 's/^\*?\s*//')"
     if [ "$#" -eq 1 ]
     then
-        echo "branches was $branches"
         branches="$(echo $branches | eval $grep_command $1)"
-        echo "branches is $branches"
     fi
     echo "Branches:\n$branches"
 
-    if [ "$(echo $branches | wc -l)" -lt 1 ]
+    nb_branches=$(echo $branches | wc -l)
+    echo "Nb branches: $nb_branches"
+    if [ "$nb_branches" -lt 1 ]
     then
         echo "No branch to select"
         return 0
-    fi
-
-    selected_branch=$(echo "$branches" | fzf)
-    if [ -n "$selected_branch" ]
+    elif [ "$nb_branches" -eq 1 ]
     then
-        git checkout "$selected_branch"
+        echo "A single branch corresponds: $branches"
+        git checkout "$branches"
+    else
+        selected_branch=$(echo "$branches" | fzf)
+        if [ -n "$selected_branch" ]
+        then
+            git checkout "$selected_branch"
+        fi
     fi
 }
 
