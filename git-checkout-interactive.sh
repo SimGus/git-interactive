@@ -46,7 +46,10 @@ git_checkout_interactive() {
         return 1
     else
         selected_branch=$(echo "$branches" | fzf)
-        git checkout "$selected_branch"
+        if [ -n "$selected_branch" ]
+        then
+            git checkout "$selected_branch"
+        fi
     fi
 }
 
