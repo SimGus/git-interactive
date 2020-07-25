@@ -10,7 +10,20 @@ gc() {
         echo "Too few arguments"
         __gci_usage
     else
-        echo "Arguments: $@"
+        interactive=false
+        for arg in "$@"
+        do
+            shift
+            echo "Handling arg $arg"
+            if [ "$arg" = "-i" ] || [ "$arg" = "--interactive" ]
+            then
+                interactive=true
+                continue
+            fi
+            set -- "$@" "$arg"
+        done
+        echo "args: $@"
+        echo "interactive? $interactive"
     fi
 }
 
