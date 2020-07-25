@@ -1,7 +1,29 @@
 #!/usr/bin/env bash
 
+grep_program="rg"
+
 git_checkout_interactive() {
     echo "Called git checkout interactive with args $@"
+    show_remote_branches=false
+    for arg in "$@"
+    do
+        shift
+        if [ "$arg" = "-r" ] || [ "$arg" = "--include-remote-branches" ]
+        then
+            show_remote_branches=true
+            continue
+        fi
+        set -- "$@" "$arg"
+    done
+
+    if [ "$show_remote_branches" = false ]
+    then
+        branches="$(git branch)"
+    else
+        branches="$(git branch -r)"
+    fi
+    branches="$(echo $branches | sed -r 's/^\*?\s*//')"
+    echo "Branches:\n$branches"
 }
 
 gc() {
@@ -9,12 +31,12 @@ gc() {
     then
         echo "Too few arguments"
         __gci_usage
+        exit 1
     else
         interactive=false
         for arg in "$@"
         do
             shift
-            echo "Handling arg $arg"
             if [ "$arg" = "-i" ] || [ "$arg" = "--interactive" ]
             then
                 interactive=true
