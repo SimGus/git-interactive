@@ -5,6 +5,7 @@ grep_program="rg"
 git_checkout_interactive() {
     echo "Called git checkout interactive with args $@"
     show_remote_branches=false
+    show_all_branches=false
     for arg in "$@"
     do
         shift
@@ -12,11 +13,20 @@ git_checkout_interactive() {
         then
             show_remote_branches=true
             continue
+        elif [ "$arg" = "-a" ] || [ "$arg" = "--all" ]
+        then
+            show_all_branches=true
+            continue
         fi
         set -- "$@" "$arg"
     done
 
-    if [ "$show_remote_branches" = false ]
+    echo "modes: remote? $show_remote_branches all? $show_all_branches"
+
+    if [ "$show_all_branches" = true ]
+    then
+        branches="$(git branch -a)"
+    elif [ "$show_remote_branches" = false ]
     then
         branches="$(git branch)"
     else
@@ -40,7 +50,7 @@ git_checkout_interactive() {
     fi
 }
 
-gc() {
+gchk() {
     if [ "$#" -eq 0 ]
     then
         echo "Too few arguments"
@@ -58,11 +68,9 @@ gc() {
             fi
             set -- "$@" "$arg"
         done
-        echo "args: $@"
-        echo "interactive? $interactive"
         if [ "$interactive" = false ]
         then
-            git checkout "$@"
+            git checkout $@
         else
             git_checkout_interactive $@
         fi
