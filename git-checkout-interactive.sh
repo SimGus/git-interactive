@@ -1,9 +1,15 @@
 #!/usr/bin/env bash
 
-grep_program="rg"
+grep_command="rg"
 
 git_checkout_interactive() {
     echo "Called git checkout interactive with args $@"
+    if ! command -v fzf &> /dev/null
+    then
+        echo "Unable to find command 'fzf'. Please install 'fzf'."
+        return 1
+    fi
+
     show_remote_branches=false
     show_all_branches=false
     for arg in "$@"
@@ -20,8 +26,14 @@ git_checkout_interactive() {
         fi
         set -- "$@" "$arg"
     done
-
     echo "modes: remote? $show_remote_branches all? $show_all_branches"
+
+    if [ "$#" -gt 1 ]
+    then
+        echo "Too many arguments."
+        __gci_usage
+        return 1
+    fi
 
     if [ "$show_all_branches" = true ]
     then
@@ -33,23 +45,24 @@ git_checkout_interactive() {
         branches="$(git branch -r)"
     fi
     branches="$(echo $branches | sed -r 's/^\*?\s*//')"
+    if [ "$#" -eq 1 ]
+    then
+        echo "branches was $branches"
+        branches="$(echo $branches | eval $grep_command $1)"
+        echo "branches is $branches"
+    fi
     echo "Branches:\n$branches"
-    if [ "$(echo $branches | wc -l)" -lt 2 ]
+
+    if [ "$(echo $branches | wc -l)" -lt 1 ]
     then
         echo "No branch to select"
         return 0
     fi
 
-    if ! command -v fzf &> /dev/null
+    selected_branch=$(echo "$branches" | fzf)
+    if [ -n "$selected_branch" ]
     then
-        echo "Unable to find command 'fzf'. Please install 'fzf'."
-        return 1
-    else
-        selected_branch=$(echo "$branches" | fzf)
-        if [ -n "$selected_branch" ]
-        then
-            git checkout "$selected_branch"
-        fi
+        git checkout "$selected_branch"
     fi
 }
 
