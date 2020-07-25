@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-git-checkout-interactive() {
-    echo "Called git checkout interactive"
+git_checkout_interactive() {
+    echo "Called git checkout interactive with args $@"
 }
 
 gc() {
@@ -24,6 +24,12 @@ gc() {
         done
         echo "args: $@"
         echo "interactive? $interactive"
+        if [ "$interactive" = false ]
+        then
+            eval "git checkout $@"
+        else
+            git_checkout_interactive $@
+        fi
     fi
 }
 
