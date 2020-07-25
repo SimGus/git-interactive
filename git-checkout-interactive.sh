@@ -36,7 +36,7 @@ git_checkout_interactive() {
         return 1
     else
         selected_branch=$(echo "$branches" | fzf)
-        echo "Selected branch: $selected_branch"
+        git checkout "$selected_branch"
     fi
 }
 
@@ -62,7 +62,7 @@ gc() {
         echo "interactive? $interactive"
         if [ "$interactive" = false ]
         then
-            eval "git checkout $@"
+            git checkout "$@"
         else
             git_checkout_interactive $@
         fi
