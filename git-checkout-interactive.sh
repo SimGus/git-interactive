@@ -42,17 +42,48 @@ __gci_usage() {
     echo "Git Checkout Interactive -- SimGus 2020"
     echo "Usage: git-checkout-interactive [-r|-a] [<PARTIAL-BRANCH-NAME>]"
     echo "\t<PARTIAL-BRANCH-NAME>\t\tA pattern to look for in the branches names (filters out other branches)"
-    echo "\t-r, --include-remote-branches\t\tIf the command runs interactively, only takes into account the remote branches"
+    echo "\t-r, --include-remote-branches\tIf the command runs interactively, only takes into account the remote branches"
     echo "\t-a, --all\t\t\tIf the command runs interactively, take into account both the local and remote branches"
 }
 git_checkout_interactive() {
     echo "Called git checkout interactive with args $@"
+    __gci_check_dependencies
+
+    branches=$(__gci_fetch_branches $@)
+    if [ "$?" -eq 1 ]
+    then
+        echo "Too many arguments."
+        __gci_usage
+        return 1
+    else
+        nb_branches=$(echo $branches | wc -l)
+        echo "Nb branches: $nb_branches"
+        if [ "$nb_branches" -lt 1 ]
+        then
+            echo "No branch to select"
+            return 0
+        elif [ "$nb_branches" -eq 1 ]
+        then
+            echo "A single branch corresponds: $branches"
+            git checkout "$branches"
+        else
+            selected_branch=$(echo "$branches" | fzf)
+            if [ -n "$selected_branch" ]
+            then
+                git checkout "$selected_branch"
+            fi
+        fi
+    fi
+}
+
+__gci_check_dependencies() {
     if ! command -v fzf &> /dev/null
     then
         echo "Unable to find command 'fzf'. Please install 'fzf'."
         return 1
     fi
-
+}
+__gci_fetch_branches() {
     show_remote_branches=false
     show_all_branches=false
     for arg in "$@"
@@ -69,12 +100,9 @@ git_checkout_interactive() {
         fi
         set -- "$@" "$arg"
     done
-    echo "modes: remote? $show_remote_branches all? $show_all_branches"
 
     if [ "$#" -gt 1 ]
     then
-        echo "Too many arguments."
-        __gci_usage
         return 1
     fi
 
@@ -92,23 +120,5 @@ git_checkout_interactive() {
     then
         branches="$(echo $branches | eval $grep_command $1)"
     fi
-    echo "Branches:\n$branches"
-
-    nb_branches=$(echo $branches | wc -l)
-    echo "Nb branches: $nb_branches"
-    if [ "$nb_branches" -lt 1 ]
-    then
-        echo "No branch to select"
-        return 0
-    elif [ "$nb_branches" -eq 1 ]
-    then
-        echo "A single branch corresponds: $branches"
-        git checkout "$branches"
-    else
-        selected_branch=$(echo "$branches" | fzf)
-        if [ -n "$selected_branch" ]
-        then
-            git checkout "$selected_branch"
-        fi
-    fi
+    echo "$branches"
 }
