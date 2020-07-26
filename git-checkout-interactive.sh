@@ -50,6 +50,15 @@ git_checkout_interactive() {
     echo "Called git checkout interactive with args $@"
     __gci_check_dependencies
 
+    include_remote_branches=false
+    for arg in "$@"
+    do
+        if [ "$arg" = "-r" ] || [ "$arg" = "--include-remote-branches" ] || [ "$arg" = "-a" ] || [ "$arg" = "--all" ]
+        then
+            include_remote_branches=true
+        fi
+    done
+
     branches=$(__gci_fetch_branches $@)
     if [ "$?" -eq 1 ]
     then
@@ -65,12 +74,22 @@ git_checkout_interactive() {
         elif [ "$nb_branches" -eq 1 ]
         then
             echo "A single branch corresponds: $branches"
-            git checkout "$branches"
+            if [ "$include_remote_branches" = false ] # TODO refactor this out
+            then
+                git checkout "$branches"
+            else
+                git checkout -t "$branches" # TODO check whether the local branch already exists
+            fi
         else
             selected_branch=$(echo "$branches" | fzf)
             if [ -n "$selected_branch" ]
             then
-                git checkout "$selected_branch"
+                if [ "$include_remote_branches" = false ]
+                then
+                    git checkout "$selected_branch"
+                else
+                    git checkout -t "$selected_branch"
+                fi
             fi
         fi
     fi
