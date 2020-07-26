@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 grep_command="rg"
+branch_filter_command="rg -v '_backup'"
 
 __gchk_usage() {
     echo "Git Checkout++ -- SimGus 2020"
@@ -57,7 +58,6 @@ git_checkout_interactive() {
         return 1
     else
         nb_branches=$(echo $branches | wc -l)
-        echo "Nb branches: $nb_branches"
         if [ "$nb_branches" -lt 1 ]
         then
             echo "No branch to select"
@@ -108,17 +108,22 @@ __gci_fetch_branches() {
 
     if [ "$show_all_branches" = true ]
     then
-        branches="$(git branch -a)"
+        branches=$(git branch -a)
     elif [ "$show_remote_branches" = false ]
     then
-        branches="$(git branch)"
+        branches=$(git branch)
     else
-        branches="$(git branch -r)"
+        branches=$(git branch -r)
     fi
-    branches="$(echo $branches | sed -r 's/^\*?\s*//')"
+    branches=$(echo $branches | sed -r 's/^\*?\s*//')
     if [ "$#" -eq 1 ]
     then
-        branches="$(echo $branches | eval $grep_command $1)"
+        branches=$(echo $branches | eval $grep_command $1)
+    fi
+
+    if [ -n "$branch_filter_command" ]
+    then
+        branches=$(echo $branches | eval $branch_filter_command)
     fi
     echo "$branches"
 }
