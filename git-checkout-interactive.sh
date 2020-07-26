@@ -3,6 +3,7 @@
 grep_command="rg"
 branch_filter_command="rg -v '_backup'"
 
+
 __gchk_usage() {
     echo "Git Checkout++ -- SimGus 2020"
     echo "Usage: gchk [-i|--interactive] [<PARTIAL-BRANCH-NAME>]"
@@ -39,6 +40,7 @@ gchk() {
     fi
 }
 
+
 __gci_usage() {
     echo "Git Checkout Interactive -- SimGus 2020"
     echo "Usage: git-checkout-interactive [-r|-a] [<PARTIAL-BRANCH-NAME>]"
@@ -51,11 +53,13 @@ git_checkout_interactive() {
     __gci_check_dependencies
 
     include_remote_branches=false
+    include_remote_branches_flag=""
     for arg in "$@"
     do
         if [ "$arg" = "-r" ] || [ "$arg" = "--include-remote-branches" ] || [ "$arg" = "-a" ] || [ "$arg" = "--all" ]
         then
             include_remote_branches=true
+            include_remote_branches_flag="--include-remote-branches"
         fi
     done
 
@@ -74,22 +78,12 @@ git_checkout_interactive() {
         elif [ "$nb_branches" -eq 1 ]
         then
             echo "A single branch corresponds: $branches"
-            if [ "$include_remote_branches" = false ] # TODO refactor this out
-            then
-                git checkout "$branches"
-            else
-                git checkout -t "$branches" # TODO check whether the local branch already exists
-            fi
+            __gci_checkout "$include_remote_branches_flag" "$selected_branch"
         else
             selected_branch=$(echo "$branches" | fzf)
             if [ -n "$selected_branch" ]
             then
-                if [ "$include_remote_branches" = false ]
-                then
-                    git checkout "$selected_branch"
-                else
-                    git checkout -t "$selected_branch"
-                fi
+                __gci_checkout "$include_remote_branches_flag" "$selected_branch"
             fi
         fi
     fi
@@ -102,6 +96,7 @@ __gci_check_dependencies() {
         return 1
     fi
 }
+
 __gci_fetch_branches() {
     show_remote_branches=false
     show_all_branches=false
@@ -145,4 +140,26 @@ __gci_fetch_branches() {
         branches=$(echo $branches | eval $branch_filter_command)
     fi
     echo "$branches"
+}
+
+__gci_checkout() {
+    echo "args are $@"
+    include_remote_branches=false
+    for arg in "$@"
+    do
+        if [ "$arg" = "--include-remote-branches" ]
+        then
+            include_remote_branches=true
+            continue
+        else
+            selected_branch="$arg"
+        fi
+    done
+
+    if [ "$include_remote_branches" = false ]
+    then
+        git checkout "$selected_branch"
+    else
+        git checkout -t "$selected_branch" # TODO check whether the local branch already exists
+    fi
 }
