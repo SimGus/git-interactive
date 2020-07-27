@@ -20,24 +20,35 @@ gchk() {
         __gchk_usage
         return 1
     else
-        interactive=false
-        for arg in "$@"
-        do
-            shift
-            if [ "$arg" = "-i" ] || [ "$arg" = "--interactive" ]
-            then
-                interactive=true
-                continue
-            fi
-            set -- "$@" "$arg"
-        done
-        if [ "$interactive" = false ]
+        if [ "$(__gchk_is_git_repo)" = false ]
         then
-            git checkout $@
+            echo "Fatal: not in a get repository"
+            return 1
         else
-            git_checkout_interactive $@
+            interactive=false
+            for arg in "$@"
+            do
+                shift
+                if [ "$arg" = "-i" ] || [ "$arg" = "--interactive" ]
+                then
+                    interactive=true
+                    continue
+                fi
+                set -- "$@" "$arg"
+            done
+            if [ "$interactive" = false ]
+            then
+                git checkout $@
+            else
+                git_checkout_interactive $@
+            fi
         fi
     fi
+}
+
+
+__gchk_is_git_repo() {
+    git rev-parse --git-dir &> /dev/null && echo "true" || echo "false"
 }
 
 
@@ -50,40 +61,46 @@ __gci_usage() {
 }
 git_checkout_interactive() {
     echo "Called git checkout interactive with args $@"
-    __gci_check_dependencies
-
-    include_remote_branches=false
-    include_remote_branches_flag=""
-    for arg in "$@"
-    do
-        if [ "$arg" = "-r" ] || [ "$arg" = "--include-remote-branches" ] || [ "$arg" = "-a" ] || [ "$arg" = "--all" ]
-        then
-            include_remote_branches=true
-            include_remote_branches_flag="--include-remote-branches"
-        fi
-    done
-
-    branches=$(__gci_fetch_branches $@)
-    if [ "$?" -eq 1 ]
+    if [ "$(__gchk_is_git_repo)" = false ]
     then
-        echo "Too many arguments."
-        __gci_usage
+        echo "Fatal: not in a get repository"
         return 1
     else
-        nb_branches=$(echo $branches | wc -l)
-        if [ "$nb_branches" -lt 1 ]
-        then
-            echo "No branch to select"
-            return 0
-        elif [ "$nb_branches" -eq 1 ]
-        then
-            echo "A single branch corresponds: $branches"
-            __gci_checkout "$include_remote_branches_flag" "$selected_branch"
-        else
-            selected_branch=$(echo "$branches" | fzf)
-            if [ -n "$selected_branch" ]
+        __gci_check_dependencies
+
+        include_remote_branches=false
+        include_remote_branches_flag=""
+        for arg in "$@"
+        do
+            if [ "$arg" = "-r" ] || [ "$arg" = "--include-remote-branches" ] || [ "$arg" = "-a" ] || [ "$arg" = "--all" ]
             then
+                include_remote_branches=true
+                include_remote_branches_flag="--include-remote-branches"
+            fi
+        done
+
+        branches=$(__gci_fetch_branches $@)
+        if [ "$?" -eq 1 ]
+        then
+            echo "Too many arguments."
+            __gci_usage
+            return 1
+        else
+            nb_branches=$(echo $branches | wc -l)
+            if [ "$nb_branches" -lt 1 ]
+            then
+                echo "No branch to select"
+                return 0
+            elif [ "$nb_branches" -eq 1 ]
+            then
+                echo "A single branch corresponds: $branches"
                 __gci_checkout "$include_remote_branches_flag" "$selected_branch"
+            else
+                selected_branch=$(echo "$branches" | fzf)
+                if [ -n "$selected_branch" ]
+                then
+                    __gci_checkout "$include_remote_branches_flag" "$selected_branch"
+                fi
             fi
         fi
     fi
@@ -160,6 +177,11 @@ __gci_checkout() {
     then
         git checkout "$selected_branch"
     else
+        $already_existing_local_branch=$(__gci_find_existing_local_branch "$selected_branch")
+        echo "Already existing local branch: $already_existing_local_branch"
         git checkout -t "$selected_branch" # TODO check whether the local branch already exists
     fi
+}
+__gci_find_existing_local_branch() {
+    echo "$(git branch -vv | eval $grep_command '$1')"
 }
