@@ -80,11 +80,18 @@ git_checkout_interactive() {
         done
 
         branches=$(__gci_fetch_branches $@)
-        if [ "$?" -eq 1 ]
+        if [ "$?" -gt 1 ]
         then
             echo "Too many arguments."
             __gci_usage
             return 1
+        elif [ "$?" -eq 1 ]
+        then
+            selected_branch=$(echo "$branches" | fzf -q "$1")
+            if [ -n "$selected_branch" ]
+            then
+                __gci_checkout "$include_remote_branches_flag" "$selected_branch"
+            fi
         else
             nb_branches=$(echo $branches | wc -l)
             if [ "$nb_branches" -lt 1 ]
@@ -147,10 +154,10 @@ __gci_fetch_branches() {
         branches=$(git branch -r)
     fi
     branches=$(echo $branches | sed -r 's/^\*?\s*//')
-    if [ "$#" -eq 1 ]
-    then
-        branches=$(echo $branches | eval $grep_command $1)
-    fi
+    # if [ "$#" -eq 1 ]
+    # then
+    #     branches=$(echo $branches | eval $grep_command $1)
+    # fi
 
     if [ -n "$branch_filter_command" ]
     then
