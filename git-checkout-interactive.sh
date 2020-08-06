@@ -20,28 +20,22 @@ gchk() {
         __gchk_usage
         return 1
     else
-        if [ "$(__gchk_is_git_repo)" = false ]
-        then
-            echo "Fatal: not in a get repository"
-            return 1
-        else
-            interactive=false
-            for arg in "$@"
-            do
-                shift
-                if [ "$arg" = "-i" ] || [ "$arg" = "--interactive" ]
-                then
-                    interactive=true
-                    continue
-                fi
-                set -- "$@" "$arg"
-            done
-            if [ "$interactive" = false ]
+        interactive=false
+        for arg in "$@"
+        do
+            shift
+            if [ "$arg" = "-i" ] || [ "$arg" = "--interactive" ]
             then
-                git checkout $@
-            else
-                git_checkout_interactive $@
+                interactive=true
+                continue
             fi
+            set -- "$@" "$arg"
+        done
+        if [ "$interactive" = false ]
+        then
+            git checkout $@
+        else
+            git_checkout_interactive $@
         fi
     fi
 }
@@ -80,7 +74,7 @@ git_checkout_interactive() {
         done
 
         branches=$(__gci_fetch_branches $@)
-        if [ "$?" -gt 1 ]
+        if [ "$?" -gt 1 ] # Error when getting branches
         then
             echo "Too many arguments."
             __gci_usage
@@ -90,7 +84,7 @@ git_checkout_interactive() {
             selected_branch=$(echo "$branches" | fzf -q "$1")
             if [ -n "$selected_branch" ]
             then
-                __gci_checkout "$include_remote_branches_flag" "$selected_branch"
+                __gci_checkout $include_remote_branches_flag $selected_branch
             fi
         else
             nb_branches=$(echo $branches | wc -l)
@@ -101,12 +95,12 @@ git_checkout_interactive() {
             elif [ "$nb_branches" -eq 1 ]
             then
                 echo "A single branch corresponds: $branches"
-                __gci_checkout "$include_remote_branches_flag" "$selected_branch"
+                __gci_checkout $include_remote_branches_flag $selected_branch
             else
                 selected_branch=$(echo "$branches" | fzf)
                 if [ -n "$selected_branch" ]
                 then
-                    __gci_checkout "$include_remote_branches_flag" "$selected_branch"
+                    __gci_checkout $include_remote_branches_flag $selected_branch
                 fi
             fi
         fi
@@ -122,18 +116,17 @@ __gci_check_dependencies() {
 }
 
 __gci_fetch_branches() {
-    show_remote_branches=false
-    show_all_branches=false
+    git_branch_arg=""
     for arg in "$@"
     do
         shift
         if [ "$arg" = "-r" ] || [ "$arg" = "--include-remote-branches" ]
         then
-            show_remote_branches=true
+            git_branch_arg="-r"
             continue
         elif [ "$arg" = "-a" ] || [ "$arg" = "--all" ]
         then
-            show_all_branches=true
+            git_branch_arg="-a"
             continue
         fi
         set -- "$@" "$arg"
@@ -144,24 +137,11 @@ __gci_fetch_branches() {
         return 1
     fi
 
-    if [ "$show_all_branches" = true ]
-    then
-        branches=$(git branch -a)
-    elif [ "$show_remote_branches" = false ]
-    then
-        branches=$(git branch)
-    else
-        branches=$(git branch -r)
-    fi
-    branches=$(echo $branches | sed -r 's/^\*?\s*//')
-    # if [ "$#" -eq 1 ]
-    # then
-    #     branches=$(echo $branches | eval $grep_command $1)
-    # fi
+    branches=$(git branch $git_branch_arg | sed -r 's/^\*?\s*//')
 
     if [ -n "$branch_filter_command" ]
     then
-        branches=$(echo $branches | eval $branch_filter_command)
+        branches="$(echo $branches | eval $branch_filter_command)"
     fi
     echo "$branches"
 }
