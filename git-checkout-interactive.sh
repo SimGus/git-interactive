@@ -71,7 +71,6 @@ git_checkout_interactive() {
             shift
             if [ "$arg" = "-r" ] || [ "$arg" = "--include-remote-branches" ] || [ "$arg" = "-a" ] || [ "$arg" = "--all" ]
             then
-                echo "found $arg"
                 include_remote_branches_flag="--include-remote-branches"
                 continue
             fi
@@ -166,13 +165,24 @@ __gci_checkout() {
 
     if [ "$include_remote_branches" = false ]
     then
-        git checkout "$selected_branch"
+        git checkout $selected_branch
     else
-        $already_existing_local_branch=$(__gci_find_existing_local_branch "$selected_branch")
-        echo "Already existing local branch: $already_existing_local_branch"
-        git checkout -t "$selected_branch" # TODO check whether the local branch already exists
+        remote_name="$(echo $selected_branch | sed 's:remotes/::')"
+        corresponding_local_branch="$(__gci_find_corresponding_local_branch $remote_name)"
+        if [ -z "$corresponding_local_branch" ]
+        then
+            git checkout -t $selected_branch
+        else
+            echo "Local branch '$corresponding_local_branch' already tracks '$remote_name'"
+            return 1
+        fi
     fi
 }
-__gci_find_existing_local_branch() {
-    echo "$(git branch -vv | eval $grep_command '$1')"
+__gci_find_corresponding_local_branch() {
+    if [ "$#" -ne 1 ]
+    then
+        return 0
+    else
+        echo "$(git branch -vv | eval $grep_command $remote_name | cut -d' ' -f2)"
+    fi
 }
