@@ -63,6 +63,7 @@ git_checkout_interactive() {
         __gci_check_dependencies
 
         branches=$(__gci_fetch_branches $@)
+        branch_selection_return_value="$?"
 
         include_remote_branches_flag=""
         for arg in "$@"
@@ -77,12 +78,13 @@ git_checkout_interactive() {
             set -- "$@" "$arg"
         done
 
-        if [ "$?" -gt 1 ] # Error when getting branches
+        echo "machin is $branch_selection_return_value"
+        if [ "$branch_selection_return_value" -gt 1 ] # Error when getting branches
         then
             echo "Too many arguments."
             __gci_usage
             return 1
-        elif [ "$?" -eq 1 ]
+        elif [ "$branch_selection_return_value" -eq 1 ]
         then
             selected_branch=$(echo "$branches" | fzf -q "$1")
             if [ -n "$selected_branch" ]
