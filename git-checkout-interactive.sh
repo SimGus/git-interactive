@@ -62,18 +62,21 @@ git_checkout_interactive() {
     else
         __gci_check_dependencies
 
-        include_remote_branches=false
+        branches=$(__gci_fetch_branches $@)
+
         include_remote_branches_flag=""
         for arg in "$@"
         do
+            shift
             if [ "$arg" = "-r" ] || [ "$arg" = "--include-remote-branches" ] || [ "$arg" = "-a" ] || [ "$arg" = "--all" ]
             then
-                include_remote_branches=true
+                echo "found $arg"
                 include_remote_branches_flag="--include-remote-branches"
+                continue
             fi
+            set -- "$@" "$arg"
         done
 
-        branches=$(__gci_fetch_branches $@)
         if [ "$?" -gt 1 ] # Error when getting branches
         then
             echo "Too many arguments."
