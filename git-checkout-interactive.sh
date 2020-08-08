@@ -51,14 +51,14 @@ __gci_usage() {
 }
 git_checkout_interactive() {
     echo "Called git checkout interactive with args $@"
-    if [ "$(__gchk_is_git_repo)" = false ]
+    if [ "$(__gi_is_git_repo)" = false ]
     then
         echo "Fatal: not in a get repository"
         return 1
     else
-        __gci_check_dependencies
+        __gi_check_dependencies
 
-        branches=$(__gci_fetch_branches $@)
+        branches=$(__gi_fetch_branches $@)
         branch_selection_return_value="$?"
 
         include_remote_branches_flag=""

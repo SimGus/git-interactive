@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-__gchk_is_git_repo() {
+__gi_is_git_repo() {
     git rev-parse --git-dir &> /dev/null && echo "true" || echo "false"
 }
 
-__gci_check_dependencies() {
+__gi_check_dependencies() {
     if ! command -v fzf &> /dev/null
     then
         echo "Unable to find command 'fzf'. Please install 'fzf'."
@@ -12,7 +12,7 @@ __gci_check_dependencies() {
     fi
 }
 
-__gci_fetch_branches() {
+__gi_fetch_branches() {
     git_branch_arg=""
     for arg in "$@"
     do
