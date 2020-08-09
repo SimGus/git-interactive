@@ -2,7 +2,6 @@
 
 source ./utils.sh
 
-
 __gchk_usage() {
     echo "Git Checkout++ -- SimGus 2020"
     echo "Usage: gchk [-i|--interactive] [<PARTIAL-BRANCH-NAME>]"
