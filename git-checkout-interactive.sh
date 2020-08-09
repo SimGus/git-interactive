@@ -3,7 +3,6 @@
 source ./utils.sh
 
 grep_command="rg"
-branch_filter_command="rg -v '_backup'"
 
 
 __gchk_usage() {
@@ -72,11 +71,11 @@ git_checkout_interactive() {
             fi
             set -- "$@" "$arg"
         done
+        echo "remaining args $@"
 
-        if [ "$branch_selection_return_value" -gt 1 ] # Error when getting branches
+        if [ "$branch_selection_return_value" -ne 0 ] # Error when getting branches
         then
-            echo "Too many arguments."
-            __gci_usage
+            echo "Error while fetching branches."
             return 1
         elif [ "$branch_selection_return_value" -eq 1 ]
         then
