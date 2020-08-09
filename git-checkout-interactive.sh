@@ -29,6 +29,7 @@ gchk() {
             fi
             set -- "$@" "$arg"
         done
+
         if [ "$interactive" = false ]
         then
             git checkout $@

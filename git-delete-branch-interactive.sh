@@ -17,11 +17,28 @@ gdel() {
         __gdel_usage
         return 1
     else
-        echo "todo"
+        interactive=false
+        for arg in "$@"
+        do
+            shift
+            if [ "$arg" = "-i" ] || [ "$arg" = "--interactive" ]
+            then
+                interactive=true
+                continue
+            fi
+            set -- "$@" "$arg"
+        done
+        
+        if [ "$interactive" = false ]
+        then
+            git branch -d $@
+        else
+            git_delete_interactive $@
+        fi
     fi
 }
 
-gdi() {
+git_delete_interactive() {
     echo "git delete interactive called with params $@"
     delete_remote_branch=false
     for arg in "$@"
