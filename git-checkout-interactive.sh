@@ -129,12 +129,20 @@ __gci_checkout() {
             git checkout -t $selected_branch
         else
             echo "Local branch '$corresponding_local_branch' already tracks '$remote_name'"
-            # echo -n "Create a new local branch with another name? [y/n] "
-            # read create_local_branch
-            # if [ ! $create_local_branch ~= [yY] ]
-            # then
-            #     echo "answer is positive"
-            # fi
+            echo -n "Create a new local branch with another name? [y/n] "
+            read create_local_branch
+            if [[ $create_local_branch =~ [yY] ]]
+            then
+                echo -n "Please specify the name of the new branch: "
+                read new_branch_name
+                if [ -n "$new_branch_name" ]
+                then
+                    git checkout -b $new_branch_name $remote_name
+                else
+                    echo "No name provided"
+                    return 1
+                fi
+            fi
             return 1
         fi
     fi
