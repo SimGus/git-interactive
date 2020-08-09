@@ -71,19 +71,18 @@ git_checkout_interactive() {
             fi
             set -- "$@" "$arg"
         done
-        echo "remaining args $@"
+
+        if [ "$#" -gt 1 ]
+        then
+            echo "Too many arguments."
+            __gci_usage
+            return 1
+        fi
 
         if [ "$branch_selection_return_value" -ne 0 ] # Error when getting branches
         then
             echo "Error while fetching branches."
             return 1
-        elif [ "$branch_selection_return_value" -eq 1 ]
-        then
-            selected_branch=$(echo "$branches" | fzf --cycle -q "$1")
-            if [ -n "$selected_branch" ]
-            then
-                __gci_checkout $include_remote_branches_flag $selected_branch
-            fi
         else
             nb_branches=$(echo $branches | wc -l)
             if [ "$nb_branches" -lt 1 ]
@@ -95,7 +94,7 @@ git_checkout_interactive() {
                 echo "A single branch corresponds: $branches"
                 __gci_checkout $include_remote_branches_flag $selected_branch
             else
-                selected_branch=$(echo "$branches" | fzf --cycle)
+                selected_branch=$(echo "$branches" | fzf --cycle -q "$1")
                 if [ -n "$selected_branch" ]
                 then
                     __gci_checkout $include_remote_branches_flag $selected_branch
