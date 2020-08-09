@@ -92,7 +92,7 @@ git_checkout_interactive() {
             elif [ "$nb_branches" -eq 1 ]
             then
                 echo "A single branch corresponds: $branches"
-                __gci_checkout $include_remote_branches_flag $selected_branch
+                __gci_checkout $include_remote_branches_flag $branches
             else
                 selected_branch=$(echo "$branches" | fzf --cycle -q "$1")
                 if [ -n "$selected_branch" ]
@@ -129,6 +129,12 @@ __gci_checkout() {
             git checkout -t $selected_branch
         else
             echo "Local branch '$corresponding_local_branch' already tracks '$remote_name'"
+            # echo -n "Create a new local branch with another name? [y/n] "
+            # read create_local_branch
+            # if [ ! $create_local_branch ~= [yY] ]
+            # then
+            #     echo "answer is positive"
+            # fi
             return 1
         fi
     fi
