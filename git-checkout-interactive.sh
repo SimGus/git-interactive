@@ -49,7 +49,6 @@ __gci_usage() {
     echo "\t-a, --all\t\t\tIf the command runs interactively, take into account both the local and remote branches"
 }
 git_checkout_interactive() {
-    echo "Called git checkout interactive with args $@"
     if [ "$(__gi_is_git_repo)" = false ]
     then
         echo "Fatal: not in a get repository"
@@ -105,7 +104,6 @@ git_checkout_interactive() {
 }
 
 __gci_checkout() {
-    echo "args are $@"
     include_remote_branches=false
     for arg in "$@"
     do
@@ -143,7 +141,6 @@ __gci_checkout() {
                     return 1
                 fi
             fi
-            return 1
         fi
     fi
 }
