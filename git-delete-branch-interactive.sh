@@ -38,18 +38,33 @@ gdel() {
     fi
 }
 
+__gdi_usage() {
+    echo "Git Delete Interactive -- SimGus 2020"
+    echo "Usage: git_delete_interactive [-r] [<PARTIAL-BRANCH-NAME>]"
+    echo "\t<PARTIAL-BRANCH-NAME>\t\tA pattern to look for in the branches names (filters out other branches)"
+    echo "\t-r, --include-remote-branches\tIf the command runs interactively, only takes into account the remote branches"
+    echo "\t-a, --all\t\t\tIf the command runs interactively, take into account both the local and remote branches"
+}
 git_delete_interactive() {
     echo "git delete interactive called with params $@"
-    delete_remote_branch=false
-    for arg in "$@"
-    do
-        shift
-        if [ "$arg" = "-r" ] || [ "$arg" = "--remote-branch" ]
-        then
-            delete_remote_branch=true
-        fi
-        set -- "$@" "$arg"
-    done
+    if [ "$(__gi_is_git_repo)" = false ]
+    then
+        echo "Fatal: not in a get repository"
+        return 1
+    else
+        __gi_check_dependencies
 
-    echo "del remote: $delete_remote_branch"
+        delete_remote_branch=false
+        for arg in "$@"
+        do
+            shift
+            if [ "$arg" = "-r" ] || [ "$arg" = "--remote-branch" ]
+            then
+                delete_remote_branch=true
+            fi
+            set -- "$@" "$arg"
+        done
+
+        echo "del remote: $delete_remote_branch"
+    fi
 }
