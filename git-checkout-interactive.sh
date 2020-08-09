@@ -2,8 +2,6 @@
 
 source ./utils.sh
 
-grep_command="rg"
-
 
 __gchk_usage() {
     echo "Git Checkout++ -- SimGus 2020"
@@ -149,6 +147,6 @@ __gci_find_corresponding_local_branch() {
     then
         return 0
     else
-        echo "$(git branch -vv | eval $grep_command $remote_name | cut -d' ' -f2)"
+        echo "$(git branch -vv | eval $__gi_grep_command $remote_name | cut -d' ' -f2)"
     fi
 }

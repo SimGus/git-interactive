@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+__gi_grep_command="rg"
 branch_filter_command="rg -v '_backup'"
 
 
