@@ -68,7 +68,19 @@ git_delete_interactive() {
             set -- "$@" "$arg"
         done
 
-        echo "del remote: $delete_remote_branch"
-        echo "BRANCHES: $branches"
+        if [ "$#" -gt 1 ]
+        then
+            echo "Too many arguments."
+            __gdi_usage
+            return 1
+        fi
+
+        if [ "$branch_selection_return_value" -ne 0 ]
+        then
+            echo "Error while fetching branches."
+            return 1
+        else
+            echo "$branches" | fzf
+        fi
     fi
 }
