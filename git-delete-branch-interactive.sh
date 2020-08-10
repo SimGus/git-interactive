@@ -54,6 +54,9 @@ git_delete_interactive() {
     else
         __gi_check_dependencies
 
+        branches=$(__gi_fetch_branches $@)
+        branch_selection_return_value="$?"
+
         delete_remote_branch=false
         for arg in "$@"
         do
@@ -66,5 +69,6 @@ git_delete_interactive() {
         done
 
         echo "del remote: $delete_remote_branch"
+        echo "BRANCHES: $branches"
     fi
 }
