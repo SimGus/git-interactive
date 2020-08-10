@@ -80,7 +80,17 @@ git_delete_interactive() {
             echo "Error while fetching branches."
             return 1
         else
-            echo "$branches" | fzf
+            nb_branches=$(echo $branches | wc -l)
+            if [ "$nb_branches" -lt 1 ]
+            then
+                echo "No branch to delete"
+                return 0
+            elif [ "$nb_branches" -eq 1 ]
+            then
+                echo "One branch: $branches"
+            else
+                echo $branches | fzf
+            fi
         fi
     fi
 }
