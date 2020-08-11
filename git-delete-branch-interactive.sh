@@ -87,9 +87,15 @@ git_delete_interactive() {
                 return 0
             elif [ "$nb_branches" -eq 1 ]
             then
-                echo "One branch: $branches"
+                branch=$branches
+                echo "Only one branch found: $branch"
             else
-                echo $branches | fzf
+                branch=$(echo $branches | fzf --cycle -q "$1")
+                if [ -z "$branch" ]
+                then
+                    return 0
+                fi
+                echo "Selected branch: $branch"
             fi
         fi
     fi
