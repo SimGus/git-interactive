@@ -88,15 +88,16 @@ git_checkout_interactive() {
                 return 0
             elif [ "$nb_branches" -eq 1 ]
             then
-                echo "A single branch corresponds: $branches"
-                __gci_checkout $include_remote_branches_flag $branches
+                selected_branch="$branches"
+                echo "A single branch corresponds: $selected_branches"
             else
                 selected_branch=$(echo "$branches" | fzf --cycle -q "$1")
-                if [ -n "$selected_branch" ]
+                if [ -z "$selected_branch" ]
                 then
-                    __gci_checkout $include_remote_branches_flag $selected_branch
+                    return 0
                 fi
             fi
+            __gci_checkout $include_remote_branches_flag $selected_branches
         fi
     fi
 }
