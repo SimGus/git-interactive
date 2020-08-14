@@ -98,7 +98,13 @@ git_delete_interactive() {
             fi
             echo "Selected branch: $selected_branch"
 
-            __gdi_get_info_remote_branch $selected_branch
+            remote_branch_info="$(__gdi_get_info_remote_branch $selected_branch)"
+            echo "remote branch info: $remote_branch_info"
+            if [ -n "$remote_branch_info" ]
+            then
+                remote_branch_name="$(echo $remote_branch_info | cut -d' ' -f1)"
+                up_to_date_with_remote="$(echo $remote_branch_info | cut -d' ' -f2)"
+            fi
         fi
     fi
 }
@@ -109,7 +115,9 @@ __gdi_get_info_remote_branch() {
         return 1
     fi
 
+    echo "Fetching changes from remote server"
     git fetch
+    echo "Done\n"
 
     pattern="^\*?\s+$1"
     branch_info=$(git branch -vv | eval $__gi_grep_command '$pattern')
