@@ -108,6 +108,7 @@ git_delete_interactive() {
                 if [ $up_to_date_with_remote = true ]
                 then
                     echo "Deleting remote $remote_branch_name"
+                    # git push --delete "$(echo $remote_branch_name | sed 's|/| |')"
                 fi
             fi
         fi
@@ -120,9 +121,7 @@ __gdi_get_info_remote_branch() {
         return 1
     fi
 
-    echo "Fetching changes from remote server"
-    git fetch
-    echo "Done\n"
+    git fetch &> /dev/null
 
     pattern="^\*?\s+$1"
     branch_info=$(git branch -vv | eval $__gi_grep_command '$pattern')
