@@ -104,6 +104,11 @@ git_delete_interactive() {
             then
                 remote_branch_name="$(echo $remote_branch_info | cut -d' ' -f1)"
                 up_to_date_with_remote="$(echo $remote_branch_info | cut -d' ' -f2)"
+
+                if [ $up_to_date_with_remote = true ]
+                then
+                    echo "Deleting remote $remote_branch_name"
+                fi
             fi
         fi
     fi
