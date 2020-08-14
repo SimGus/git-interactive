@@ -87,16 +87,25 @@ git_delete_interactive() {
                 return 0
             elif [ "$nb_branches" -eq 1 ]
             then
-                branch=$branches
-                echo "Only one branch found: $branch"
+                selected_branch=$branches
+                echo "Only one branch found: $selected_branch"
             else
-                branch=$(echo $branches | fzf --cycle -q "$1")
-                if [ -z "$branch" ]
+                selected_branch=$(echo $branches | fzf --cycle -q "$1")
+                if [ -z "$selected_branch" ]
                 then
                     return 0
                 fi
-                echo "Selected branch: $branch"
             fi
+            echo "Selected branch: $selected_branch"
+            __gdi_get_info_remote_branch $selected_branch
         fi
     fi
+}
+
+__gdi_get_info_remote_branch() {
+    if [ "$#" -ne 1 ]
+    then
+        return 1
+    fi
+    echo "$(git branch -vv)"
 }
