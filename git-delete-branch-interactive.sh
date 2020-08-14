@@ -108,12 +108,18 @@ __gdi_get_info_remote_branch() {
         return 1
     fi
 
-    branch_info=$(git branch -vv | eval $__gi_grep_command $1)
-    remote_info="${${branch_info#*\[}%%\]*}"
-    if [[ "$remote_info" =~ ':' ]]
+    pattern="^\*?\s+$1"
+    branch_info=$(git branch -vv | eval $__gi_grep_command '$pattern')
+    if [[ "$branch_info" =~ '$1\s+\[' ]]
     then
-        echo "${remote_info%%:*} false"
-    else
-        echo "${remote_info%%:*} true"
+        echo "branch info $branch_info"
+        remote_info="${${branch_info#*\[}%%\]*}"
+        echo "remote info $remote_info"
+        if [[ "$remote_info" =~ ':' ]]
+        then
+            echo "${remote_info%%:*} false"
+        else
+            echo "${remote_info%%:*} true"
+        fi
     fi
 }
