@@ -107,5 +107,13 @@ __gdi_get_info_remote_branch() {
     then
         return 1
     fi
-    echo "$(git branch -vv)"
+
+    branch_info=$(git branch -vv | eval $__gi_grep_command $1)
+    remote_info="${${branch_info#*\[}%%\]*}"
+    if [[ "$remote_info" =~ ':' ]]
+    then
+        echo "${remote_info%%:*} false"
+    else
+        echo "${remote_info%%:*} true"
+    fi
 }
