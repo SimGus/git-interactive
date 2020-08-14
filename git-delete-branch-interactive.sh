@@ -107,8 +107,19 @@ git_delete_interactive() {
 
                 if [ $up_to_date_with_remote = true ]
                 then
-                    echo "Deleting remote $remote_branch_name"
+                    echo "Deleting remote branch $remote_branch_name"
                     # git push --delete "$(echo $remote_branch_name | sed 's|/| |')"
+                else
+                    echo "Remote branch $remote_branch_name is not up-to-date with the local tracking branch $selected_branch"
+                    echo "Delete it anyway? [y/n] "
+                    read delete_anyway
+                    if [ "$delete_anyway" =~ [yY] ]
+                    then
+                        echo "Deleting remote branch $remote_branch_name"
+                        # git push --delete "$(echo $remote_branch_name | sed 's|/| |')"
+                    else
+                        echo "Not deleting remote branch $remote_branch_name"
+                    fi
                 fi
             fi
         fi
