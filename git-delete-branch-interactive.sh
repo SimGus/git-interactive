@@ -97,6 +97,7 @@ git_delete_interactive() {
                 fi
             fi
             echo "Selected branch: $selected_branch"
+
             __gdi_get_info_remote_branch $selected_branch
         fi
     fi
@@ -108,13 +109,13 @@ __gdi_get_info_remote_branch() {
         return 1
     fi
 
+    git fetch
+
     pattern="^\*?\s+$1"
     branch_info=$(git branch -vv | eval $__gi_grep_command '$pattern')
-    if [[ "$branch_info" =~ '$1\s+\[' ]]
+    if [[ "$branch_info" =~ '^\*?\s+\w+\s+\w+\s+\[' ]]
     then
-        echo "branch info $branch_info"
         remote_info="${${branch_info#*\[}%%\]*}"
-        echo "remote info $remote_info"
         if [[ "$remote_info" =~ ':' ]]
         then
             echo "${remote_info%%:*} false"
