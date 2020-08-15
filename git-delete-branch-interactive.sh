@@ -104,46 +104,47 @@ git_delete_interactive() {
                     return 0
                 fi
             fi
-            echo "Selected branch: $selected_branch"
 
-            remote_branch_info="$(__gdi_get_info_remote_branch $selected_branch)"
-            if [ -n "$remote_branch_info" ] && [ $only_local_branch = false ]
+            if [ $only_remote_branch = false]
             then
-                remote_branch_name="$(echo $remote_branch_info | cut -d' ' -f1)"
-                up_to_date_with_remote="$(echo $remote_branch_info | cut -d' ' -f2)"
-
-                if [ $up_to_date_with_remote = true ]
+                remote_branch_info="$(__gdi_get_info_remote_branch $selected_branch)"
+                if [ -n "$remote_branch_info" ] && [ $only_local_branch = false ]
                 then
-                    echo "Deleting remote branch $remote_branch_name"
-                    git push --delete $(echo $remote_branch_name | sed 's|/| |')
-                else
-                    echo "Remote branch $remote_branch_name is not up-to-date with the local tracking branch $selected_branch"
-                    echo -n "Delete it anyway? [y/n] "
-                    read delete_anyway
-                    if [[ "$delete_anyway" =~ [yY] ]]
+                    remote_branch_name="$(echo $remote_branch_info | cut -d' ' -f1)"
+                    up_to_date_with_remote="$(echo $remote_branch_info | cut -d' ' -f2)"
+
+                    if [ $up_to_date_with_remote = true ]
                     then
-                        echo "Deleting remote branch $remote_branch_name"
-                        git push --delete $(echo $remote_branch_name | sed 's|/| |')
+                        __gdi_delete_branch --remote $remote_branch_name
                     else
-                        echo "Not deleting remote branch $remote_branch_name"
+                        echo "Remote branch $remote_branch_name is not up-to-date with the local tracking branch $selected_branch"
+                        echo -n "Delete it anyway? [y/n] "
+                        read delete_anyway
+                        if [[ "$delete_anyway" =~ [yY] ]]
+                        then
+                            __gdi_delete_branch --remote $remote_branch_name
+                        else
+                            echo "Not deleting remote branch $remote_branch_name"
+                        fi
                     fi
                 fi
-            fi
 
-            if [ "$selected_branch" = "$(git_current_branch)" ]
-            then
-                echo "Cannot delete current local branch. Please checkout another branch and retry."
-                return 1
-            else
-                echo -n "Delete local branch $selected_branch (the last copy of the work)? [y/N] "
-                read delete_local_branch
-                if [[ "$delete_local_branch" =~ [yY] ]]
+                if [ "$selected_branch" = "$(git_current_branch)" ]
                 then
-                    echo "Deleting local branch $selected_branch"
-                    git branch -D $selected_branch
+                    echo "Cannot delete current local branch. Please checkout another branch and retry."
+                    return 1
                 else
-                    echo "Not deleting local branch $selected_branch"
+                    echo -n "Delete local branch $selected_branch (the last copy of the work)? [y/N] "
+                    read delete_local_branch
+                    if [[ "$delete_local_branch" =~ [yY] ]]
+                    then
+                        __gdi_delete_branch --local $selected_branch
+                    else
+                        echo "Not deleting local branch $selected_branch"
+                    fi
                 fi
+            else
+                echo "TODO: delete only remote $selected_branch"
             fi
         fi
     fi
@@ -168,5 +169,40 @@ __gdi_get_info_remote_branch() {
         else
             echo "${remote_info%%:*} true"
         fi
+    fi
+}
+
+__gdi_delete_branch() {
+    local_branch=false
+    remote_branch=false
+    for arg in "$@"
+    do
+        shift
+        if [ "$arg" = "--local" ]
+        then
+            local_branch=true
+            continue
+        elif [ "$arg" = "--remote" ]
+        then
+            remote_branch=true
+            continue
+        fi
+        set -- "$@" "$arg"
+    done
+
+    if  [ "$#" -ne 1 ]
+    then
+        echo "Internal error: $0 received an incorrect number of parameters."
+        return 1
+    fi
+
+    if [ $local_branch = true ]
+    then
+        echo "Deleting local branch $1"
+        git branch -D "$1"
+    elif [ $remote_branch = true ]
+    then
+        echo "Deleting remote branch $1"
+        git push --delete $(echo $1 | sed 's|/| |')
     fi
 }
