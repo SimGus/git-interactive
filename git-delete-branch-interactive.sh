@@ -40,10 +40,10 @@ gdel() {
 
 __gdi_usage() {
     echo "Git Delete Interactive -- SimGus 2020"
-    echo "Usage: git_delete_interactive [-r] [<PARTIAL-BRANCH-NAME>]"
+    echo "Usage: git_delete_interactive [-l|-r] [<PARTIAL-BRANCH-NAME>]"
     echo "\t<PARTIAL-BRANCH-NAME>\t\tA pattern to look for in the branches names (filters out other branches)"
-    echo "\t-r, --include-remote-branches\tIf the command runs interactively, only takes into account the remote branches"
-    echo "\t-a, --all\t\t\tIf the command runs interactively, take into account both the local and remote branches"
+    echo "\t-l, --local-only\tOnly allows to select and delete a local branch"
+    echo "\t-r, --remote-only\tOnly allows to select and delete a remote branch"
 }
 git_delete_interactive() {
     echo "git delete interactive called with params $@"
@@ -54,19 +54,27 @@ git_delete_interactive() {
     else
         __gi_check_dependencies
 
-        branches=$(__gi_fetch_branches $@)
-        branch_selection_return_value="$?"
-
-        delete_remote_branch=false
+        only_remote_branch=false
+        only_local_branch=false
+        branch_list_arg=""
         for arg in "$@"
         do
             shift
-            if [ "$arg" = "-r" ] || [ "$arg" = "--remote-branch" ]
+            if [ "$arg" = "-r" ] || [ "$arg" = "--remote-only" ]
             then
-                delete_remote_branch=true
+                only_remote_branch=true
+                branch_list_arg="-r"
+                continue
+            elif [ "$arg" = "-l" ] || [ "$arg" = "--local-only" ]
+            then
+                only_local_branch=true
+                continue
             fi
             set -- "$@" "$arg"
         done
+
+        branches=$(__gi_fetch_branches "$branch_list_arg")
+        branch_selection_return_value="$?"
 
         if [ "$#" -gt 1 ]
         then
@@ -99,7 +107,7 @@ git_delete_interactive() {
             echo "Selected branch: $selected_branch"
 
             remote_branch_info="$(__gdi_get_info_remote_branch $selected_branch)"
-            if [ -n "$remote_branch_info" ]
+            if [ -n "$remote_branch_info" ] && [ $only_local_branch = false ]
             then
                 remote_branch_name="$(echo $remote_branch_info | cut -d' ' -f1)"
                 up_to_date_with_remote="$(echo $remote_branch_info | cut -d' ' -f2)"
