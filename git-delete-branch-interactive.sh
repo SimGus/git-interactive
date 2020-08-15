@@ -99,7 +99,6 @@ git_delete_interactive() {
             echo "Selected branch: $selected_branch"
 
             remote_branch_info="$(__gdi_get_info_remote_branch $selected_branch)"
-            echo "remote branch info: $remote_branch_info"
             if [ -n "$remote_branch_info" ]
             then
                 remote_branch_name="$(echo $remote_branch_info | cut -d' ' -f1)"
@@ -108,7 +107,7 @@ git_delete_interactive() {
                 if [ $up_to_date_with_remote = true ]
                 then
                     echo "Deleting remote branch $remote_branch_name"
-                    # git push --delete "$(echo $remote_branch_name | sed 's|/| |')"
+                    git push --delete $(echo $remote_branch_name | sed 's|/| |')
                 else
                     echo "Remote branch $remote_branch_name is not up-to-date with the local tracking branch $selected_branch"
                     echo -n "Delete it anyway? [y/n] "
@@ -116,7 +115,7 @@ git_delete_interactive() {
                     if [[ "$delete_anyway" =~ [yY] ]]
                     then
                         echo "Deleting remote branch $remote_branch_name"
-                        # git push --delete "$(echo $remote_branch_name | sed 's|/| |')"
+                        git push --delete $(echo $remote_branch_name | sed 's|/| |')
                     else
                         echo "Not deleting remote branch $remote_branch_name"
                     fi
@@ -130,11 +129,12 @@ git_delete_interactive() {
             else
                 echo -n "Delete local branch $selected_branch (the last copy of the work)? [y/N] "
                 read delete_local_branch
-                echo "answer: $delete_local_branch"
                 if [[ "$delete_local_branch" =~ [yY] ]]
                 then
                     echo "Deleting local branch $selected_branch"
                     git branch -D $selected_branch
+                else
+                    echo "Not deleting local branch $selected_branch"
                 fi
             fi
         fi
