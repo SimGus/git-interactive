@@ -123,13 +123,19 @@ git_delete_interactive() {
                 fi
             fi
 
-            echo -n "Delete local branch $selected_branch (the last copy of the work)? [y/N] "
-            read delete_local_branch
-            echo "answer: $delete_local_branch"
-            if [[ "$delete_local_branch" =~ [yY] ]]
+            if [ "$selected_branch" = "$(git_current_branch)" ]
             then
-                echo "Deleting local branch $selected_branch"
-                git branch -D $selected_branch
+                echo "Cannot delete current local branch. Please checkout another branch and retry."
+                return 1
+            else
+                echo -n "Delete local branch $selected_branch (the last copy of the work)? [y/N] "
+                read delete_local_branch
+                echo "answer: $delete_local_branch"
+                if [[ "$delete_local_branch" =~ [yY] ]]
+                then
+                    echo "Deleting local branch $selected_branch"
+                    git branch -D $selected_branch
+                fi
             fi
         fi
     fi
