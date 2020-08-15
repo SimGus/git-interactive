@@ -105,7 +105,7 @@ git_delete_interactive() {
                 fi
             fi
 
-            if [ $only_remote_branch = false]
+            if [ $only_remote_branch = false ]
             then
                 remote_branch_info="$(__gdi_get_info_remote_branch $selected_branch)"
                 if [ -n "$remote_branch_info" ] && [ $only_local_branch = false ]
