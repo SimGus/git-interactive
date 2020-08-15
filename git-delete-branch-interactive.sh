@@ -126,6 +126,7 @@ git_delete_interactive() {
                         else
                             echo "Not deleting remote branch $remote_branch_name"
                         fi
+                        echo ""
                     fi
                 fi
 
@@ -144,7 +145,7 @@ git_delete_interactive() {
                     fi
                 fi
             else
-                echo "TODO: delete only remote $selected_branch"
+                __gdi_delete_branch --remote $selected_branch
             fi
         fi
     fi
