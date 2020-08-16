@@ -17,7 +17,7 @@ gdel() {
         __gdel_usage
         return 1
     else
-        interactive=false
+        local interactive=false
         for arg in "$@"
         do
             shift
@@ -54,9 +54,9 @@ git_delete_interactive() {
     else
         __gi_check_dependencies
 
-        only_remote_branch=false
-        only_local_branch=false
-        branch_list_arg=""
+        local only_remote_branch=false
+        local only_local_branch=false
+        local branch_list_arg=""
         for arg in "$@"
         do
             shift
@@ -73,8 +73,8 @@ git_delete_interactive() {
             set -- "$@" "$arg"
         done
 
-        branches=$(__gi_fetch_branches "$branch_list_arg")
-        branch_selection_return_value="$?"
+        local branches=$(__gi_fetch_branches "$branch_list_arg")
+        local branch_selection_return_value="$?"
 
         if [ "$#" -gt 1 ]
         then
@@ -88,17 +88,17 @@ git_delete_interactive() {
             echo "Error while fetching branches."
             return 1
         else
-            nb_branches=$(echo $branches | wc -l)
+            local nb_branches=$(echo $branches | wc -l)
             if [ "$nb_branches" -lt 1 ]
             then
                 echo "No branch to delete"
                 return 0
             elif [ "$nb_branches" -eq 1 ]
             then
-                selected_branch=$branches
+                local selected_branch=$branches
                 echo "Only one branch found: $selected_branch"
             else
-                selected_branch=$(echo $branches | fzf --cycle -q "$1")
+                local selected_branch=$(echo $branches | fzf --cycle -q "$1")
                 if [ -z "$selected_branch" ]
                 then
                     return 0
@@ -112,11 +112,11 @@ git_delete_interactive() {
             then
                 __gdi_delete_branch --remote $selected_branch
             else
-                remote_branch_info="$(__gdi_get_info_remote_branch $selected_branch)"
+                local remote_branch_info="$(__gdi_get_info_remote_branch $selected_branch)"
                 if [ -n "$remote_branch_info" ]
                 then
                     remote_branch_name="$(echo $remote_branch_info | cut -d' ' -f1)"
-                    up_to_date_with_remote="$(echo $remote_branch_info | cut -d' ' -f2)"
+                    local up_to_date_with_remote="$(echo $remote_branch_info | cut -d' ' -f2)"
 
                     if [ $up_to_date_with_remote = true ]
                     then
@@ -162,11 +162,11 @@ __gdi_get_info_remote_branch() {
 
     git fetch &> /dev/null
 
-    pattern="^\*?\s+$1"
-    branch_info=$(git branch -vv | eval $__gi_grep_command '$pattern')
+    local pattern="^\*?\s+$1"
+    local branch_info=$(git branch -vv | eval $__gi_grep_command '$pattern')
     if [[ "$branch_info" =~ '^\*?\s+\w+\s+\w+\s+\[' ]]
     then
-        remote_info="${${branch_info#*\[}%%\]*}"
+        local remote_info="${${branch_info#*\[}%%\]*}"
         if [[ "$remote_info" =~ ':' ]]
         then
             echo "${remote_info%%:*} false"
@@ -177,8 +177,8 @@ __gdi_get_info_remote_branch() {
 }
 
 __gdi_delete_branch() {
-    local_branch=false
-    remote_branch=false
+    local local_branch=false
+    local remote_branch=false
     for arg in "$@"
     do
         shift

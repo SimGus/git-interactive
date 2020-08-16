@@ -17,7 +17,7 @@ __gi_check_dependencies() {
 }
 
 __gi_fetch_branches() {
-    git_branch_arg=""
+    local git_branch_arg=""
     for arg in "$@"
     do
         if [ "$arg" = "-r" ] || [ "$arg" = "--include-remote-branches" ]
@@ -29,7 +29,7 @@ __gi_fetch_branches() {
         fi
     done
 
-    branches=$(git branch $git_branch_arg | sed -r 's/^\*?\s*//')
+    local branches=$(git branch $git_branch_arg | sed -r 's/^\*?\s*//')
 
     if [ -n "$branch_filter_command" ]
     then
