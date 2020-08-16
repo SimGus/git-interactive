@@ -54,10 +54,10 @@ git_checkout_interactive() {
     else
         __gi_check_dependencies
 
-        branches=$(__gi_fetch_branches $@)
-        branch_selection_return_value="$?"
+        local branches=$(__gi_fetch_branches $@)
+        local branch_selection_return_value="$?"
 
-        include_remote_branches_flag=""
+        local include_remote_branches_flag=""
         for arg in "$@"
         do
             shift
@@ -81,17 +81,17 @@ git_checkout_interactive() {
             echo "Error while fetching branches."
             return 1
         else
-            nb_branches=$(echo $branches | wc -l)
+            local nb_branches=$(echo $branches | wc -l)
             if [ "$nb_branches" -lt 1 ]
             then
                 echo "No branch to select"
                 return 0
             elif [ "$nb_branches" -eq 1 ]
             then
-                selected_branch="$branches"
+                local selected_branch="$branches"
                 echo "A single branch corresponds: $selected_branches"
             else
-                selected_branch=$(echo "$branches" | fzf --cycle -q "$1")
+                local selected_branch=$(echo "$branches" | fzf --cycle -q "$1")
                 if [ -z "$selected_branch" ]
                 then
                     return 0
@@ -103,7 +103,7 @@ git_checkout_interactive() {
 }
 
 __gci_checkout() {
-    include_remote_branches=false
+    local include_remote_branches=false
     for arg in "$@"
     do
         if [ "$arg" = "--include-remote-branches" ]
@@ -111,7 +111,7 @@ __gci_checkout() {
             include_remote_branches=true
             continue
         else
-            selected_branch="$arg"
+            local selected_branch="$arg"
         fi
     done
 
@@ -119,8 +119,8 @@ __gci_checkout() {
     then
         git checkout $selected_branch
     else
-        remote_name="$(echo $selected_branch | sed 's:remotes/::')"
-        corresponding_local_branch="$(__gci_find_corresponding_local_branch $remote_name)"
+        local remote_name="$(echo $selected_branch | sed 's:remotes/::')"
+        local corresponding_local_branch="$(__gci_find_corresponding_local_branch $remote_name)"
         if [ -z "$corresponding_local_branch" ]
         then
             git checkout -t $selected_branch
