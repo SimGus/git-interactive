@@ -1,7 +1,9 @@
 # Git interactive
-Git interactive is a very simple shell script that adds interactive capabilities to both those git commands, all that without moving out of your terminal:
+Git interactive is a set of small commands that aim at giving a few git commands interactive abilities with the help of the excellent `fzf` project, all that without moving out of your terminal.
+
+2 git commands are covered:
 - `git checkout`
-- `git branch --delete` (*TODO*)
+- `git branch --delete`
 
 Checkout [git-fuzzy](https://github.com/bigH/git-fuzzy) for a more complete interactive git experience in your terminal.
 
