@@ -8,7 +8,8 @@ gdel() {
         echo "Usage: gdel [-i|--interactive] [<PARTIAL-BRANCH-NAME>]"
         echo "\t<PARTIAL-BRANCH-NAME>\t\tThe name of a git branch (can be partial in interactive mode)"
         echo "\t-i, --interactive\t\tRun the command in interactive mode"
-        echo "\t-r, --remote-branches\tIf the command runs interactively, only takes into account the remote branches"
+        echo "\t-l, --local-only\tIf the command runs interactively, only allows to select and delete a local branch"
+        echo "\t-r, --remote-only\tIf the command runs interactively, only allows to select and delete a remote branch"
         echo "\nFor information about Git's official branch delete command, please read 'man git branch'."
     }
 
