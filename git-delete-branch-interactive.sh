@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-source ./utils.sh
-
 gdel() {
     __gdel_usage() {
         echo "Git Delete++ -- SimGus 2020"
@@ -40,7 +38,9 @@ gdel() {
     fi
 }
 
-git_delete_interactive() {
+git_delete_interactive() (
+    source ./utils.sh
+
     __gdi_usage() {
         echo "Git Delete Interactive -- SimGus 2020"
         echo "Usage: git_delete_interactive [-l|-r] [<PARTIAL-BRANCH-NAME>]"
@@ -215,4 +215,4 @@ git_delete_interactive() {
             fi
         fi
     fi
-}
+)

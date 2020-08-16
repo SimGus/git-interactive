@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-source ./utils.sh
-
 gchk() {
     __gchk_usage() {
         echo "Git Checkout++ -- SimGus 2020"
@@ -40,7 +38,9 @@ gchk() {
     fi
 }
 
-git_checkout_interactive() {
+git_checkout_interactive() (
+    source ./utils.sh
+
     __gci_usage() {
         echo "Git Checkout Interactive -- SimGus 2020"
         echo "Usage: git_checkout_interactive [-r|-a] [<PARTIAL-BRANCH-NAME>]"
@@ -154,4 +154,4 @@ git_checkout_interactive() {
             __gci_checkout $include_remote_branches_flag $selected_branches
         fi
     fi
-}
+)
