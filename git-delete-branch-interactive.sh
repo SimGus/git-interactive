@@ -46,6 +46,61 @@ __gdi_usage() {
     echo "\t-r, --remote-only\tOnly allows to select and delete a remote branch"
 }
 git_delete_interactive() {
+    __gdi_get_info_remote_branch() {
+        if [ "$#" -ne 1 ]
+        then
+            return 1
+        fi
+
+        local pattern="^\*?\s+$1"
+        local branch_info=$(git branch -vv | eval $__gi_grep_command '$pattern')
+        if [[ "$branch_info" =~ '^\*?\s+\w+\s+\w+\s+\[' ]]
+        then
+            local remote_info="${${branch_info#*\[}%%\]*}"
+            if [[ "$remote_info" =~ ':' ]]
+            then
+                echo "${remote_info%%:*} false"
+            else
+                echo "${remote_info%%:*} true"
+            fi
+        fi
+    }
+
+    __gdi_delete_branch() {
+        local local_branch=false
+        local remote_branch=false
+        for arg in "$@"
+        do
+            shift
+            if [ "$arg" = "--local" ]
+            then
+                local_branch=true
+                continue
+            elif [ "$arg" = "--remote" ]
+            then
+                remote_branch=true
+                continue
+            fi
+            set -- "$@" "$arg"
+        done
+
+        if  [ "$#" -ne 1 ]
+        then
+            echo "Internal error: $0 received an incorrect number of parameters."
+            return 1
+        fi
+
+        if [ $local_branch = true ]
+        then
+            echo "Deleting local branch $1"
+            git branch -D "$1"
+        elif [ $remote_branch = true ]
+        then
+            echo "Deleting remote branch $1"
+            git push --delete $(echo $1 | sed 's|/| |')
+        fi
+    }
+
     echo "git delete interactive called with params $@"
     if [ "$(__gi_is_git_repo)" = false ]
     then
@@ -156,60 +211,5 @@ git_delete_interactive() {
                 fi
             fi
         fi
-    fi
-}
-
-__gdi_get_info_remote_branch() {
-    if [ "$#" -ne 1 ]
-    then
-        return 1
-    fi
-
-    local pattern="^\*?\s+$1"
-    local branch_info=$(git branch -vv | eval $__gi_grep_command '$pattern')
-    if [[ "$branch_info" =~ '^\*?\s+\w+\s+\w+\s+\[' ]]
-    then
-        local remote_info="${${branch_info#*\[}%%\]*}"
-        if [[ "$remote_info" =~ ':' ]]
-        then
-            echo "${remote_info%%:*} false"
-        else
-            echo "${remote_info%%:*} true"
-        fi
-    fi
-}
-
-__gdi_delete_branch() {
-    local local_branch=false
-    local remote_branch=false
-    for arg in "$@"
-    do
-        shift
-        if [ "$arg" = "--local" ]
-        then
-            local_branch=true
-            continue
-        elif [ "$arg" = "--remote" ]
-        then
-            remote_branch=true
-            continue
-        fi
-        set -- "$@" "$arg"
-    done
-
-    if  [ "$#" -ne 1 ]
-    then
-        echo "Internal error: $0 received an incorrect number of parameters."
-        return 1
-    fi
-
-    if [ $local_branch = true ]
-    then
-        echo "Deleting local branch $1"
-        git branch -D "$1"
-    elif [ $remote_branch = true ]
-    then
-        echo "Deleting remote branch $1"
-        git push --delete $(echo $1 | sed 's|/| |')
     fi
 }
