@@ -110,8 +110,11 @@ git_delete_interactive() {
                 __gdi_delete_branch --local $selected_branch
             elif [ $only_remote_branch = true ]
             then
+                git fetch &> /dev/null
                 __gdi_delete_branch --remote $selected_branch
             else
+                git fetch &> /dev/null
+
                 local remote_branch_info="$(__gdi_get_info_remote_branch $selected_branch)"
                 if [ -n "$remote_branch_info" ]
                 then
@@ -161,8 +164,6 @@ __gdi_get_info_remote_branch() {
     then
         return 1
     fi
-
-    git fetch &> /dev/null
 
     local pattern="^\*?\s+$1"
     local branch_info=$(git branch -vv | eval $__gi_grep_command '$pattern')
