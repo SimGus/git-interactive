@@ -131,8 +131,8 @@ git_delete_interactive() {
                         else
                             echo "Not deleting remote branch $remote_branch_name"
                         fi
-                        echo ""
                     fi
+                    echo ""
                 fi
 
                 if [ "$selected_branch" = "$(git_current_branch)" ]
