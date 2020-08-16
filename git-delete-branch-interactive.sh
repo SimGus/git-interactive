@@ -124,6 +124,7 @@ git_delete_interactive() {
                     else
                         echo "Remote branch $remote_branch_name is not up-to-date with the local tracking branch $selected_branch"
                         echo -n "Delete it anyway? [y/n] "
+                        local delete_anyway
                         read delete_anyway
                         if [[ "$delete_anyway" =~ [yY] ]]
                         then
@@ -141,6 +142,7 @@ git_delete_interactive() {
                     return 1
                 else
                     echo -n "Delete local branch $selected_branch (the last copy of the work)? [y/N] "
+                    local delete_local_branch
                     read delete_local_branch
                     if [[ "$delete_local_branch" =~ [yY] ]]
                     then

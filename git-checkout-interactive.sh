@@ -127,10 +127,12 @@ __gci_checkout() {
         else
             echo "Local branch '$corresponding_local_branch' already tracks '$remote_name'"
             echo -n "Create a new local branch with another name? [y/n] "
+            local create_local_branch
             read create_local_branch
             if [[ $create_local_branch =~ [yY] ]]
             then
                 echo -n "Please specify the name of the new branch: "
+                local new_branch_name
                 read new_branch_name
                 if [ -n "$new_branch_name" ]
                 then
