@@ -105,10 +105,15 @@ git_delete_interactive() {
                 fi
             fi
 
-            if [ $only_remote_branch = false ]
+            if [ $only_local_branch = true ]
             then
+                __gdi_delete_branch --local $selected_branch
+            elif [ $only_remote_branch = true ]
+            then
+                __gdi_delete_branch --remote $selected_branch
+            else
                 remote_branch_info="$(__gdi_get_info_remote_branch $selected_branch)"
-                if [ -n "$remote_branch_info" ] && [ $only_local_branch = false ]
+                if [ -n "$remote_branch_info" ]
                 then
                     remote_branch_name="$(echo $remote_branch_info | cut -d' ' -f1)"
                     up_to_date_with_remote="$(echo $remote_branch_info | cut -d' ' -f2)"
@@ -144,8 +149,6 @@ git_delete_interactive() {
                         echo "Not deleting local branch $selected_branch"
                     fi
                 fi
-            else
-                __gdi_delete_branch --remote $selected_branch
             fi
         fi
     fi
