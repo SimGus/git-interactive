@@ -1,6 +1,7 @@
 <div align="center">
     <img src="https://raw.githubusercontent.com/SimGus/git-interactive/master/public/logo.png" alt="git interactive logo" width="600">
 </div>
+
 Git interactive is a set of small commands that aim at giving a few git commands interactive abilities with the help of the excellent `fzf` project, all that without moving out of your terminal.
 
 2 git commands are covered:
