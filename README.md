@@ -45,7 +45,7 @@ Usage: `gchk [-i|--interactive] [<PARTIAL-BRANCH-NAME>]`
 #### git_checkout_interactive
 Usage: `git_checkout_interactive [-r|-a] [<PARTIAL-BRANCH-NAME>]`
 
-`<PARTIAL-BRANCH-NAME>`: A pattern to look for in the branches names (filters out other branches)
+`<PARTIAL-BRANCH-NAME>`: The name of a git branch (can be partial in interactive mode)
 
 `-r`, `--include-remote-branches`: If the command runs interactively, only takes into account the remote branches
 
@@ -70,7 +70,7 @@ Usage: `gdel [-i|--interactive] [<PARTIAL-BRANCH-NAME>]`
 #### git_delete_interactive
 Usage: `git_delete_interactive [-l|-r] [<PARTIAL-BRANCH-NAME>]`
 
-`<PARTIAL-BRANCH-NAME>`: A pattern to look for in the branches names (filters out other branches)
+`<PARTIAL-BRANCH-NAME>`: The name of a git branch (can be partial in interactive mode)
 
 `-l`, `--local-only`: Only allows to select and delete a local branch
 
