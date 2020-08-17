@@ -4,7 +4,7 @@
     <br/>
 </div>
 
-Git interactive is a set of small commands that aim at giving a few git commands interactive abilities with the help of the excellent `fzf` project, all that without moving out of your terminal.
+Git interactive is a set of small commands that aim at giving a few git commands interactive abilities with the help of the excellent [`fzf`](https://github.com/junegunn/fzf) project, all that without moving out of your terminal.
 
 2 git commands are covered:
 - `git checkout`
