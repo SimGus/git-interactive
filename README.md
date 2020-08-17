@@ -3,9 +3,11 @@ Git interactive is a set of small commands that aim at giving a few git commands
 
 2 git commands are covered:
 - `git checkout`
+
     <img src="https://raw.githubusercontent.com/SimGus/git-interactive/master/public/checkout.gif" alt="Preview of checkout command">
 
 - `git branch --delete`
+
     <img src="https://raw.githubusercontent.com/SimGus/git-interactive/master/public/delete.gif" alt="Preview of delete command">
 
 The commands defined in this project should work on all POSIX-compliant shell, including bash and zsh.
