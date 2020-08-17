@@ -24,3 +24,24 @@ Refer to their GitHub to have installation instructions.
     ```
     If you only want to have the "checkout" commands, only add the first line; if you only want the "delete" ones, only add the second.
 - Close and reopen your terminal (or run `source .bashrc` or `source .zshrc`)
+
+## Usage
+### Checkout
+Checkout commands allow to checkout git branches. 2 are defined in this project:
+- `gchk`
+- `git_checkout_interactive`
+
+#### gchk
+Usage: `gchk [-i|--interactive] [<PARTIAL-BRANCH-NAME>]`
+`<PARTIAL-BRANCH-NAME>`: The name of a git branch (can be partial in interactive mode)
+`-i`, `--interactive`: Runs the command in interactive mode
+`-r`, `--include-remote-branches`: If the command runs interactively, only takes into account the remote branches
+`-a`, `--all`: If the command runs interactively, take into account both the local and remote branches
+
+#### git_checkout_interactive
+Usage: `git_checkout_interactive [-r|-a] [<PARTIAL-BRANCH-NAME>]`
+`<PARTIAL-BRANCH-NAME>`: A pattern to look for in the branches names (filters out other branches)
+`-r`, `--include-remote-branches`: If the command runs interactively, only takes into account the remote branches
+`-a`, `--all`: If the command runs interactively, take into account both the local and remote branches
+
+### Delete
