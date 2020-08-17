@@ -33,15 +33,45 @@ Checkout commands allow to checkout git branches. 2 are defined in this project:
 
 #### gchk
 Usage: `gchk [-i|--interactive] [<PARTIAL-BRANCH-NAME>]`
+
 `<PARTIAL-BRANCH-NAME>`: The name of a git branch (can be partial in interactive mode)
+
 `-i`, `--interactive`: Runs the command in interactive mode
+
 `-r`, `--include-remote-branches`: If the command runs interactively, only takes into account the remote branches
+
 `-a`, `--all`: If the command runs interactively, take into account both the local and remote branches
 
 #### git_checkout_interactive
 Usage: `git_checkout_interactive [-r|-a] [<PARTIAL-BRANCH-NAME>]`
+
 `<PARTIAL-BRANCH-NAME>`: A pattern to look for in the branches names (filters out other branches)
+
 `-r`, `--include-remote-branches`: If the command runs interactively, only takes into account the remote branches
+
 `-a`, `--all`: If the command runs interactively, take into account both the local and remote branches
 
 ### Delete
+Delete commands allow to delete branches (both local branches and remote branches). 2 are defined in this project:
+- `gdel`
+- `git_delete_interactive`
+
+#### gdel
+Usage: `gdel [-i|--interactive] [<PARTIAL-BRANCH-NAME>]`
+
+`<PARTIAL-BRANCH-NAME>`: The name of a git branch (can be partial in interactive mode)
+
+`-i`, `--interactive`: Runs the command in interactive mode
+
+`-l`, `--local-only`: If the command runs interactively, only allows to select and delete a local branch
+
+`-r`, `--remote-only`: If the command runs interactively, only allows to select and delete a remote branch
+
+#### git_delete_interactive
+Usage: `git_delete_interactive [-l|-r] [<PARTIAL-BRANCH-NAME>]`
+
+`<PARTIAL-BRANCH-NAME>`: A pattern to look for in the branches names (filters out other branches)
+
+`-l`, `--local-only`: Only allows to select and delete a local branch
+
+`-r`, `--remote-only`: Only allows to select and delete a remote branch
