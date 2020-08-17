@@ -104,7 +104,6 @@ git_delete_interactive() (
         fi
     }
 
-    echo "git delete interactive called with params $@"
     if [ "$(__gi_is_git_repo)" = false ]
     then
         echo "Fatal: not in a get repository"
