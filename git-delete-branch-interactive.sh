@@ -44,7 +44,7 @@ git_delete_interactive() (
     __gdi_usage() {
         echo "Git Delete Interactive -- SimGus 2020"
         echo "Usage: git_delete_interactive [-l|-r] [<PARTIAL-BRANCH-NAME>]"
-        echo "\t<PARTIAL-BRANCH-NAME>\t\tA pattern to look for in the branches names (filters out other branches)"
+        echo "\t<PARTIAL-BRANCH-NAME>\tThe name of a git branch (can be partial)"
         echo "\t-l, --local-only\tOnly allows to select and delete a local branch"
         echo "\t-r, --remote-only\tOnly allows to select and delete a remote branch"
     }
