@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+__gdel_script_dirname="$(dirname $0)"
+
 gdel() {
     __gdel_usage() {
         echo "Git Delete++ -- SimGus 2020"
@@ -39,7 +41,7 @@ gdel() {
 }
 
 git_delete_interactive() (
-    source ./utils.sh
+    source "$__gdel_script_dirname"/utils.sh
 
     __gdi_usage() {
         echo "Git Delete Interactive -- SimGus 2020"

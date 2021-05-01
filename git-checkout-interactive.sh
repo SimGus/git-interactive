@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+__gchk_script_dirname="$(dirname $0)"
+
 gchk() {
     __gchk_usage() {
         echo "Git Checkout++ -- SimGus 2020"
@@ -39,7 +41,7 @@ gchk() {
 }
 
 git_checkout_interactive() (
-    source ./utils.sh
+    source "$__gchk_script_dirname"/utils.sh
 
     __gci_usage() {
         echo "Git Checkout Interactive -- SimGus 2020"
